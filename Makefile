@@ -15,7 +15,7 @@ qemu: main.efi OVMF.fd image/EFI/BOOT/BOOTX64.EFI
 
 image/EFI/BOOT/BOOTX64.EFI:
 	mkdir -p image/EFI/BOOT
-	cp -sf ../../../main.efi image/EFI/BOOT/BOOTX64.EFI
+	cp main.efi image/EFI/BOOT/BOOTX64.EFI
 
 OVMF.fd:
 	wget http://downloads.sourceforge.net/project/edk2/OVMF/OVMF-X64-r15214.zip
