@@ -1,6 +1,19 @@
 CC = x86_64-w64-mingw32-gcc
 CFLAGS = -shared -nostdlib -mno-red-zone -fno-stack-protector -Wall \
-         -e EfiMain
+		 -e EfiMain
+
+define GDISK_COMMANDS
+n
+
+
+
+ef00
+w
+y
+endef
+export GDISK_COMMANDS
+
+.PHONY: all image
 
 all: main.efi image/EFI/BOOT/BOOTX64.EFI
 
@@ -10,10 +23,25 @@ all: main.efi image/EFI/BOOT/BOOTX64.EFI
 %.dll: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
+image: image/EFI/BOOT/BOOTX64.EFI
+	dd if=/dev/zero of=image.img iflag=fullblock bs=1M count=1
+	mkdir -p mount
+	echo "$$GDISK_COMMANDS" | gdisk image.img
+	sudo losetup loop62 image.img
+	sudo kpartx -av /dev/loop62
+	sudo mkfs.vfat -F32 /dev/mapper/loop62p1
+	sudo mount /dev/mapper/loop62p1 mount
+	sudo cp -r image/* mount
+	sudo umount /dev/mapper/loop62p1
+	sudo kpartx -dv /dev/loop62
+	sudo losetup -d /dev/loop62
+	qemu-img convert -f raw image.img -O vmdk image.vmdk
+	cp -f image.vmdk /archshare
+
 qemu: main.efi OVMF.fd image/EFI/BOOT/BOOTX64.EFI
 	qemu-system-x86_64 -nographic -bios OVMF.fd -hda fat:image
 
-image/EFI/BOOT/BOOTX64.EFI:
+mount/EFI/BOOT/BOOTX64.EFI: main.efi
 	mkdir -p image/EFI/BOOT
 	cp main.efi image/EFI/BOOT/BOOTX64.EFI
 
