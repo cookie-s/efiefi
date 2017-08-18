@@ -10,9 +10,9 @@ struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_STRING) (
-    IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  *This,
-    IN CHAR16                                   *String
-    );
+        IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  *This,
+        IN CHAR16                                   *String
+        );
 
 typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
     void             *a;
@@ -26,13 +26,13 @@ typedef struct {
 } EFI_SYSTEM_TABLE;
 
 EFI_STATUS
-EFIAPI
+    EFIAPI
 EfiMain (
-    IN EFI_HANDLE ImageHandle,
-    IN EFI_SYSTEM_TABLE *SystemTable
-    )
+        IN EFI_HANDLE ImageHandle,
+        IN EFI_SYSTEM_TABLE *SystemTable
+        )
 {
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Hello World!\n");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"hogehogehoge");
     while(1);
     return EFI_SUCCESS;
 }
