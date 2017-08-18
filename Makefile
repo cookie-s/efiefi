@@ -6,7 +6,7 @@ define GDISK_COMMANDS
 n
 
 
-
++100M
 ef00
 w
 y
@@ -24,8 +24,9 @@ all: main.efi image/EFI/BOOT/BOOTX64.EFI
 	$(CC) $(CFLAGS) $< -o $@
 
 image: image/EFI/BOOT/BOOTX64.EFI
-	dd if=/dev/zero of=image.img iflag=fullblock bs=1M count=1
+	rm -f image.img
 	mkdir -p mount
+	dd if=/dev/zero of=image.img bs=1M count=200
 	echo "$$GDISK_COMMANDS" | gdisk image.img
 	sudo losetup loop62 image.img
 	sudo kpartx -av /dev/loop62
@@ -35,7 +36,7 @@ image: image/EFI/BOOT/BOOTX64.EFI
 	sudo umount /dev/mapper/loop62p1
 	sudo kpartx -dv /dev/loop62
 	sudo losetup -d /dev/loop62
-	qemu-img convert -f raw image.img -O vmdk image.vmdk
+	qemu-img convert image.img -O vmdk image.vmdk
 	cp -f image.vmdk /archshare
 
 qemu: main.efi OVMF.fd image/EFI/BOOT/BOOTX64.EFI
