@@ -28,6 +28,7 @@ image: image/EFI/BOOT/BOOTX64.EFI
 	mkdir -p mount
 	dd if=/dev/zero of=image.img bs=1M count=200
 	echo "$$GDISK_COMMANDS" | gdisk image.img
+	sudo modprobe loop
 	sudo losetup loop62 image.img
 	sudo kpartx -av /dev/loop62
 	sudo mkfs.vfat -F32 /dev/mapper/loop62p1
