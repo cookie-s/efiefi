@@ -7,4 +7,4 @@ http://d.hatena.ne.jp/shina_ecc/20140819/1408434995
 - kpartx (multipat-tools (AUR))
 - qemu-img (qemu-headless)
 
-![tree](https://raw.githubusercontent.com/cookie-s/efiefi/tree.png)
+![tree](https://github.com/cookie-s/efiefi/raw/master/tree.png)
