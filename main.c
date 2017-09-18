@@ -29,9 +29,37 @@ typedef struct {
 
 
 
-
 EFI_SYSTEM_TABLE *gST;
 EFI_BOOT_SERVICES *gBS;
+
+int dfs(EFI_FILE_PROTOCOL *dir, int depth) {
+    if(depth>3) return 0;
+    while(1) {
+        EFI_FILE_INFO finfo;
+        UINTN size;
+        size = sizeof(finfo);
+        EFI_STATUS stat = dir->Read(dir, &size, &finfo);
+        if(stat != EFI_SUCCESS) break;
+        if(size == 0) break;
+
+        // pass hidden files, '.' and '..'
+        if(finfo.FileName[0] == '.') continue;
+
+        for(int i=0; i<depth; i++)
+            gST->ConOut->OutputString(gST->ConOut, L" ");
+        gST->ConOut->OutputString(gST->ConOut, L"- ");
+        gST->ConOut->OutputString(gST->ConOut, finfo.FileName);
+        gST->ConOut->OutputString(gST->ConOut, L"\r\n");
+        if(finfo.Attribute & EFI_FILE_DIRECTORY) {
+            EFI_FILE_PROTOCOL *child;
+            dir->Open(dir, &child, finfo.FileName, EFI_FILE_MODE_READ, NULL);
+            dfs(child, depth+1);
+            child->Close(child);
+        }
+    }
+    return 0;
+}
+
 
 EFI_STATUS EFIAPI EfiMain (
         IN EFI_HANDLE ImageHandle,
@@ -65,16 +93,8 @@ EFI_STATUS EFIAPI EfiMain (
             continue;
         }
 
-        while(1) {
-            EFI_FILE_INFO finfo;
-            UINTN size;
-            size = sizeof(finfo);
-            EFI_STATUS stat = root->Read(root, &size, &finfo);
-            if(stat != EFI_SUCCESS) break;
-            if(size == 0) break;
-            gST->ConOut->OutputString(gST->ConOut, finfo.FileName);
-            gST->ConOut->OutputString(gST->ConOut, L"\r\n");
-        }
+        gST->ConOut->OutputString(gST->ConOut, L"/\r\n");
+        dfs(root, 1);
         gST->ConOut->OutputString(gST->ConOut, L"\r\n");
         root->Close(root);
         gBS->CloseProtocol(handles[i], &simpl_fs_guid, ImageHandle, NULL);
