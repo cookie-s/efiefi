@@ -4,24 +4,16 @@
 #include "boot_serv.h"
 #include "status.h"
 
-#define EFI_SUCCESS 0
-
-typedef unsigned short CHAR16;
-typedef unsigned long long EFI_STATUS;
-typedef void *EFI_HANDLE;
-
 struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
-typedef
-EFI_STATUS
-(EFIAPI *EFI_TEXT_STRING) (
+typedef EFI_STATUS (EFIAPI *EFI_TEXT_STRING) (
         IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  *This,
         IN CHAR16                                   *String
         );
-
 typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
     void             *a;
     EFI_TEXT_STRING  OutputString;
 } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+
 
 typedef struct {
     char                             a[52];
@@ -33,6 +25,9 @@ typedef struct {
     char b[8];
     EFI_BOOT_SERVICES *BootServices;
 } EFI_SYSTEM_TABLE;
+
+
+
 
 
 EFI_SYSTEM_TABLE *gST;

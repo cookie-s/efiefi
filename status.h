@@ -1,5 +1,7 @@
 // Table239, Table240
 
+typedef unsigned long long EFI_STATUS;
+
 #define EFI_SUCCESS 0
 
 #define EFI_LOAD_ERROR 1
